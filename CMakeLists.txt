@@ -3,4 +3,4 @@ project(FastWebServer)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(FastWebServer main.cpp include/Thread.cpp include/Thread.h)
+add_executable(FastWebServer main.cpp)

@@ -12,17 +12,13 @@
 #include <functional>
 #include <memory>
 #include <string>
+
+#include "noncopyable.h"
+#include "CountDownLatch.h"
+#include "CurrentThread.h"
+
 using namespace std;
-
-class noncopyable{
-protected:
-    noncopyable(){}
-    ~noncopyable(){}
-
-private:
-    noncopyable(const noncopyable&);
-    const noncopyable& operator=(const noncopyable&);
-};
+using namespace CurrentThread;
 
 class Thread : noncopyable {
 public:
@@ -43,8 +39,7 @@ private:
     pid_t tid_;
     string name_;
     ThreadFunction function_;
-
-
+    CountDownLatch latch_;
 };
 
 
