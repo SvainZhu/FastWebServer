@@ -23,7 +23,7 @@ using namespace CurrentThread;
 class Thread : noncopyable {
 public:
     typedef std::function<void()> ThreadFunction;
-    Thread(const ThreadFunction&, const string& name = string());
+    Thread(const ThreadFunction& function, const string& name = string());
     ~Thread();
 
     void start();
@@ -36,11 +36,30 @@ public:
 
 private:
     bool started_;
+    bool joined_;
     pid_t tid_;
     string name_;
     ThreadFunction function_;
     CountDownLatch latch_;
+    pthread_t pid_;
+    void set_default_name();
+
 };
 
+// save the thread name, id, etc data.
+class ThreadData {
+public:
+    typedef Thread::ThreadFunction ThreadFunction;
+    ThreadFunction func_;
+    string name_;
+    pid_t* tid_;
+    CountDownLatch* latch_;
+
+    ThreadData(const ThreadFunction& func, const string& name, pid_t* tid, CountDownLatch* latch)
+            : func_(func), name_(name), tid_(tid), latch_(latch) {}
+
+    void runInThread();
+
+};
 
 #endif //FASTWEBSERVER_THREAD_H
