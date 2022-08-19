@@ -12,8 +12,6 @@
 #define NANOLOG_PACK_PUSH __pragma(pack(push, 1))
 #define NANOLOG_PACK_POP __pragma(pack(pop))
 
-#ifdef _USE_ATTRIBUTES_FOR_SAL
-#undef _USE_ATTRIBUTES_FOR_SAL
 #define _USE_ATTRIBUTES_FOR_SAL 1
 
 #define NANOLOG_PRINTF_FORMAT _Printf_format_string_
