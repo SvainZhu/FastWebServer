@@ -12,7 +12,7 @@ public:
     explicit CountDownLatch(int count);
     void wait();
 
-    void countDown();
+    void count_down();
 
 private:
     mutable Mutexlock mutex_;
