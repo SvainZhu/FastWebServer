@@ -8,21 +8,27 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <string>
+#include <assert.h>
+#include <iostream>
+#include <time.h>
+#include <sys/time.h>
 
+#include "../CurrentThread.h"
+#include "../Thread.h"
 #include "Logging.h"
 
 class Logger {
 public:
-    Logger(const char *log_name, int num_lines0;
+    Logger(const char *log_name, int num_lines);
     ~Logger();
     LogStream &log_stream();
     static void set_log_name(string log_name);
     static string get_log_name();
 
 private:
-    class Implement {
+    class LogImplement {
     public:
-        Implement(const char* log_name, int num_lines);
+        LogImplement(const char* log_name, int num_lines);
         void format_time();
 
         LogStream log_stream_;
@@ -30,7 +36,7 @@ private:
         string log_name_;
 
     };
-    Implement implement_;
+    LogImplement log_implement_;
     static string log_name_;
 
 };
