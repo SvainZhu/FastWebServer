@@ -7,11 +7,13 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <ctime>
 
 #include "../noncopyable.h"
 #include "../MutexLock.h"
 #include "../Thread.h"
 #include "../CountDownLatch.h"
+#include "../Condition.h"
 #include "LogBuffer.h"
 #include "LogUtil.h"
 
@@ -45,7 +47,7 @@ public:
     LogStream& operator<<(const unsigned char* str);
     LogStream& operator<<(const string& v);
 
-    const LogBuffer& get_buffer();
+    const LogBuffer& get_buffer() const {return buffer_};
     void append(const char* log_line, int len);
     void reset_buffer();
 
@@ -85,6 +87,7 @@ private:
     CountDownLatch latch_;
 
 };
+
 
 
 #endif //FASTWEBSERVER_LOGGING_H

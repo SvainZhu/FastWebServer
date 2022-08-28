@@ -9,6 +9,8 @@
 #include <functional>
 #include <memory>
 #include <iostream>
+#include <sys/epoll.h>
+#include <sys/eventfd.h>
 
 #include "include/Thread.h"
 #include "include/CurrentThread.h"

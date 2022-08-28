@@ -21,7 +21,7 @@ void output(const char* message, int len) {
 }
 
 Logger::LogImplement::LogImplement(const char *log_name, int num_lines)
-    : log_stream_(), num_line_(num_lines), log_name_(log_name) {
+    : log_stream_(), num_lines_(num_lines), log_name_(log_name) {
     format_time();
 }
 
@@ -41,4 +41,8 @@ Logger::~Logger() {
     log_implement_.log_stream_ << " -- " << log_implement_.log_name_ << ':' << log_implement_.num_lines_ << '\n';
     const LogStream::LogBuffer& buffer(log_stream().get_buffer());
     output(buffer.get_data(), buffer.get_length());
+}
+
+LogStream& Logger::log_stream() {
+    return log_implement_.log_stream_;
 }

@@ -16,8 +16,11 @@ void AppendUtil::append(const char *string_line, const size_t len) {
     while (remained > 0) {
         size_t new_finished = this->write(string_line + finished, remained);
         if (new_finished == 0) {
-            if (ferror(fptr_)) fprintf(stderr, "AppendUtil::")
+            if (ferror(fptr_)) fprintf(stderr, "AppendUtil::");
+            break;
         }
+        finished += new_finished;
+        remained = len - finished;
     }
 }
 
