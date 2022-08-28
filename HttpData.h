@@ -20,7 +20,113 @@ class Timer;
 class EventLoop;
 class Channel;
 
-class HttpData {
+enum ProcessState {
+    STATE_PARSE_URI = 1,
+    STATE_PARSE_HEADERS,
+    STATE_RECV_BODY,
+    STATE_ANALYSIS,
+    STATE_FINISH,
+};
+
+enum URIState {
+    PARSE_URI_AGAIN = 1,
+    PARSE_URI_ERROR,
+    PARSE_URI_SUCCESS,
+};
+
+enum HeaderState {
+    PARSE_HEADER_SUCCESS,
+    PARSE_HEADER_AGAIN,
+    PARSE_HEADER_ERROR,
+};
+
+enum AnalysisState {
+    ANALYSIS_SUCCESS = 1,
+    ANALYSIS_ERROR,
+};
+
+enum ConnectionState {
+    H_CONNECTED = 0,
+    H_DISCONNECTING,
+    H_DISCONNECTED
+};
+
+enum ParseState {
+    H_START = 0,
+    H_KEY,
+    H_COLON,
+    H_SPACES_AFTER_COLON,
+    H_VALUE,
+    H_CR,
+    H_LF,
+    H_END_CR,
+    H_END_LF
+};
+
+enum HttpMethod {
+    METHOD_POST = 1,
+    METHOD_GET,
+    METHOD_HEAD,
+};
+
+enum HttpVersion {
+    HTTP_10 = 1,
+    HTTP_11,
+};
+
+class MimeType {
+public:
+    static string get_mime(const string &suffix);
+
+private:
+    MimeType();
+    ~MimeType();
+    MimeType(const MimeType &mime);
+    static void init();
+    static unordered_map<string, string> mine;
+    static pthread_once_t once_control;
+};
+
+class HttpData : public enable_shared_from_this<HttpData> {
+public:
+    HttpData(EventLoop* event_loop, int connection_fd);
+    ~HttpData();
+    void reset();
+    void link_timer(shared_ptr<Timer> timer);
+    void seperate_timer();
+    shared_ptr<Channel> get_channel();
+    EventLoop* get_event_loop();
+    void handle_close();
+    void new_event();
+
+private:
+    EventLoop event_loop_;
+    shared_ptr<Channel> channel_;
+    int fd_;
+    string buffer_in_;
+    string buffer_out_;
+    bool is_error_;
+    string file_name_;
+    string path_;
+    int read_cur_;
+    bool keep_alive_;
+    map<string, string> headers_;
+    weak_ptr<Timer> timer_;
+
+    ConnectionState connection_state_;
+    HttpMethod Http_method_;
+    HttpVersion Http_version_;
+    ProcessState process_state_;
+    PraseState prase_state_;
+
+
+    void handle_read();
+    void handle_write();
+    void handle_connect();
+    void handle_error(int fd, int num_error, string short_message);
+    URIState parse_URI();
+    HeaderState parse_Headers();
+    AnalysisState analyze_request();
 
 };
 

@@ -70,12 +70,12 @@ clean: CMakeFiles\FastWebServer.dir\clean
 CMakeFiles\FastWebServer.dir\all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FastWebServer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FastWebServer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\Svain\CLionProjects\FastWebServer\cmake-build-debug\CMakeFiles --progress-num=1,2,3 "Built target FastWebServer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\Svain\CLionProjects\FastWebServer\cmake-build-debug\CMakeFiles --progress-num=1,2 "Built target FastWebServer"
 .PHONY : CMakeFiles\FastWebServer.dir\all
 
 # Build rule for subdir invocation for target.
 CMakeFiles\FastWebServer.dir\rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Svain\CLionProjects\FastWebServer\cmake-build-debug\CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Svain\CLionProjects\FastWebServer\cmake-build-debug\CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Svain\CLionProjects\FastWebServer\cmake-build-debug\CMakeFiles 0
 .PHONY : CMakeFiles\FastWebServer.dir\rule

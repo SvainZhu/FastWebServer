@@ -118,30 +118,6 @@ FastWebServer\fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FastWebServer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\build
 .PHONY : FastWebServer\fast
 
-include\Thread.obj: include\Thread.cpp.obj
-.PHONY : include\Thread.obj
-
-# target to build an object file
-include\Thread.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\FastWebServer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\include\Thread.cpp.obj
-.PHONY : include\Thread.cpp.obj
-
-include\Thread.i: include\Thread.cpp.i
-.PHONY : include\Thread.i
-
-# target to preprocess a source file
-include\Thread.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\FastWebServer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\include\Thread.cpp.i
-.PHONY : include\Thread.cpp.i
-
-include\Thread.s: include\Thread.cpp.s
-.PHONY : include\Thread.s
-
-# target to generate assembly for a file
-include\Thread.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\FastWebServer.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\FastWebServer.dir\include\Thread.cpp.s
-.PHONY : include\Thread.cpp.s
-
 main.obj: main.cpp.obj
 .PHONY : main.obj
 
@@ -175,9 +151,6 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... FastWebServer
-	@echo ... include/Thread.obj
-	@echo ... include/Thread.i
-	@echo ... include/Thread.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
