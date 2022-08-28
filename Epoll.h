@@ -32,7 +32,7 @@ public:
     void add_timer(channel_sptr request_data, int timeout);
 
 private:
-    const int MAX_FDS = 100000;
+    static const int MAX_FDS = 100000;
     int epoll_fd_;
     vector<epoll_event> events_;
     channel_sptr fd_to_channel_[MAX_FDS];

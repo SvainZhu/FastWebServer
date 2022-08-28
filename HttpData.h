@@ -20,7 +20,7 @@ class Timer;
 class EventLoop;
 class Channel;
 
-class HttpStream {
+class HttpData {
 
 };
 
