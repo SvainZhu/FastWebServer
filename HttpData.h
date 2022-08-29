@@ -11,6 +11,11 @@
 #include <memory>
 #include <map>
 #include <unordered_map>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <iostream>
+#include <time.h>
 
 #include "Timer.h"
 #include "EventLoop.h"
@@ -20,6 +25,7 @@ class Timer;
 class EventLoop;
 class Channel;
 
+// http process state
 enum ProcessState {
     STATE_PARSE_URI = 1,
     STATE_PARSE_HEADERS,
@@ -28,29 +34,34 @@ enum ProcessState {
     STATE_FINISH,
 };
 
+// URT process state
 enum URIState {
     PARSE_URI_AGAIN = 1,
     PARSE_URI_ERROR,
     PARSE_URI_SUCCESS,
 };
 
+// header process state
 enum HeaderState {
     PARSE_HEADER_SUCCESS,
     PARSE_HEADER_AGAIN,
     PARSE_HEADER_ERROR,
 };
 
+// request analysis state
 enum AnalysisState {
     ANALYSIS_SUCCESS = 1,
     ANALYSIS_ERROR,
 };
 
+// tcp connection state
 enum ConnectionState {
     H_CONNECTED = 0,
     H_DISCONNECTING,
     H_DISCONNECTED
 };
 
+// header read state
 enum ParseState {
     H_START = 0,
     H_KEY,
@@ -63,12 +74,14 @@ enum ParseState {
     H_END_LF
 };
 
+// Http method
 enum HttpMethod {
     METHOD_POST = 1,
     METHOD_GET,
     METHOD_HEAD,
 };
 
+// Http version
 enum HttpVersion {
     HTTP_10 = 1,
     HTTP_11,
@@ -83,7 +96,7 @@ private:
     ~MimeType();
     MimeType(const MimeType &mime);
     static void init();
-    static unordered_map<string, string> mine;
+    static unordered_map<string, string> mime;
     static pthread_once_t once_control;
 };
 
@@ -117,7 +130,8 @@ private:
     HttpMethod Http_method_;
     HttpVersion Http_version_;
     ProcessState process_state_;
-    PraseState prase_state_;
+    // header read state
+    ParseState parse_state_;
 
 
     void handle_read();

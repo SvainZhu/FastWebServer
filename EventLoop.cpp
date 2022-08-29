@@ -37,6 +37,14 @@ void EventLoop::handle_connect() {
     update_poller(wakeup_channel_sptr_, 0);
 }
 
+void EventLoop::handle_read() {
+    uint64_t one = 1;
+    ssize_t n = readn(wakeup_fd_, &one, sizeof one);
+    if (n != sizeof one) LOG << "EventLoop::handle_read() reads " << n << " bytes instead of 8";
+    wakeup_channel_sptr_->set_events(EPOLLIN | EPOLLET);
+
+}
+
 EventLoop::~EventLoop() {
     close(wakeup_fd_);
     event_loop_in_this_thread = NULL;
@@ -48,4 +56,72 @@ void EventLoop::wakeup() {
     if (n != sizeof one) {
         LOG << "EventLoop::wakeup() writes" << n << " bytes instead of 8";
     }
+}
+
+void EventLoop::run_in_loop(functor &&cb) {
+    if (is_thread_in_loop()) cb();
+    else queue_in_loop(std::move(cb));
+}
+
+void EventLoop::queue_in_loop(functor &&cb) {
+    {
+        MutexLockGuard lock(mutex_lock_);
+        pending_functors_.emplace_back(std::move(cb));
+    }
+    if (!is_thread_in_loop() || calling_pending_functors_) wakeup();
+}
+
+void EventLoop::loop() {
+    assert(!looping_);
+    assert(is_thread_in_loop());
+    looping_ = true;
+    quit_ = false;
+    LOG << "EventLoop" << this << "start looping";
+    vector<channel_sptr> result;
+    while (!quit_) {
+        result.clear();
+        result = poller_->poll();
+        event_handling_ = true;
+        for (auto& item : result) item->handle_events();
+        event_handling_ = false;
+        do_pending_functors();
+        poller_->handle_expired();
+    }
+    looping_ = false;
+}
+
+void EventLoop::do_pending_functors() {
+    vector<functor> functor_list;
+    calling_pending_functors_ = true;
+    {
+        MutexLockGuard lock(mutex_lock_);
+        functor_list.swap(pending_functors_);
+    }
+    for (auto& item : functor_list) item();
+    calling_pending_functors_ = false;
+}
+
+void EventLoop::quit() {
+    quit_ = true;
+    if (!is_thread_in_loop()) wakeup();
+}
+
+bool EventLoop::is_thread_in_loop() const {
+    return thread_id_ == CurrentThread::tid();
+}
+
+void EventLoop::shutdown(channel_sptr channel) {
+    shutdown_writer(channel->get_fd());
+}
+
+void  EventLoop::update_poller(channel_sptr channel, int timeout) {
+    poller_->modify_fd_in_epoll(channel, timeout);
+}
+
+void EventLoop::remove_from_poller(channel_sptr channel) {
+    poller_->delete_fd_in_epoll(channel);
+}
+
+void EventLoop::add_to_poller(shared_ptr<Channel> channel, int timeout) {
+    poller_->add_fd_in_epoll(channel, timeout);
 }

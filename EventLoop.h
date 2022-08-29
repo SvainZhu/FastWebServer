@@ -32,11 +32,10 @@ public:
     void run_in_loop(functor&& cb);
     void queue_in_loop(functor&& cb);
     bool is_thread_in_loop() const;
-    void assert_thread_in_loop();
-    void shutdown(shared_ptr<Channel> channel);
-    void remove_from_poller(shared_ptr<Channel> channel);
-    void update_poller(shared_ptr<Channel> channel, int timeout = 0);
-    void add_poller(shared_ptr<Channel> channel, int timeout = 0);
+    void shutdown(channel_sptr channel);
+    void remove_from_poller(channel_sptr channel);
+    void update_poller(channel_sptr channel, int timeout = 0);
+    void add_to_poller(channel_sptr channel, int timeout = 0);
 
 private:
     bool looping_;
