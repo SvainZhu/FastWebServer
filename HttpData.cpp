@@ -410,7 +410,8 @@ AnalysisState HttpData::analyze_request() {
     if (Http_method_ == METHOD_POST) {
          string header;
          header += string("HTTP/1.1 200 OK\r\n");
-         if(headers_.find("Connection") != headers_.end() && headers_["Connection"] == "Keep-Alive") {
+         if(headers_.find("Connection") != headers_.end() && (headers_["Connection"] == "Keep-Alive" ||
+             headers_["Connection"] == "keep-alive")) {
              keep_alive_ = true;
              header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout="
                      + to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
@@ -432,7 +433,105 @@ AnalysisState HttpData::analyze_request() {
         header += "HTTP/1.1 200 OK\r\n";
         if (headers_.find("Connection") != headers_.end() && (headers_["Connection"] == "Keep-Alive" ||
             headers_["Connection"] == "keep-alive")) {
-
+            keep_alive_ = true;
+            header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout="
+                      + to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
         }
+        int dot_position = file_name_.find('.');
+        string file_type;
+        if (dot_position < 0) file_type = MimeType::get_mime("default");
+        else file_type = MimeType::get_mime(file_name_.substr(dot_position));
+
+        // echo test
+        if (file_name_ == "hello") {
+            buffer_out_ = "HTTP/1.1 200 OK\r\nContent-type: text/plain\r\n\r\nHello World";
+            return ANALYSIS_SUCCESS;
+        }
+        if (file_name_ == "favicon.ico") {
+            header += "Content-Type: image/png\r\n";
+            header += "Content-Length: " + to_string(sizeof favicon) + "\r\n";
+            header += "Server: Svain's Fast Web Server\r\n";
+
+            header += "\r\n";
+            buffer_out_ += header;
+            buffer_out_ += string(favicon, favicon + sizeof favicon);
+            return ANALYSIS_SUCCESS;
+        }
+
+        struct stat sbuffer;
+        if (stat(file_name_.c_str(), &sbuffer) < 0) {
+            header.clear();
+            handle_error(fd_, 404, "Not Found!!!");
+            return ANALYSIS_ERROR;
+        }
+        header += "Content-Type: " + file_type + "\r\n";
+        header += "Content-Length: " + to_string(sbuffer.st_size) + "\r\n";
+        header += "Server: Svain's Fast Web Server\r\n";
+        header += "\r\n";
+
+        if (Http_method_ == METHOD_HEAD) return ANALYSIS_SUCCESS;
+        int source_fd = open(file_name_.c_str(), O_RDONLY, 0);
+        if (source_fd < 0) {
+            buffer_out_.clear();
+            handle_error(fd_, 404, "Not Found!!!");
+            return ANALYSIS_ERROR;
+        }
+        void *mmap_result = mmap(NULL, sbuffer.st_size, PROT_READ, MAP_PRIVATE, source_fd, 0);
+        close(source_fd);
+        if (mmap_result == (void *)-1) {
+            munmap(mmap_result, sbuffer.st_size);
+            buffer_out_.clear();
+            handle_error(fd_, 404, "Not Found!!!");
+            return ANALYSIS_ERROR;
+        }
+        char *source_addr = static_cast<char *>(mmap_result);
+        buffer_out_ += string(source_addr, source_addr + sbuffer.st_size);
+        munmap(mmap_result, sbuffer.st_size);
+        return ANALYSIS_SUCCESS;
     }
+    return ANALYSIS_ERROR;
+}
+
+void HttpData::handle_error(int fd, int error_code, string short_message) {
+    short_message = " " + short_message;
+    char send_buffer[4096];
+    string body_buffer, header_buffer;
+    body_buffer += "<html><title>呀~访问出错了</title>";
+    body_buffer += "<body bgcolor=\"ffffff\">";
+    body_buffer += to_string(error_code) + short_message;
+    body_buff += "<hr><em> Svain's Fast Web Server</em>\n</body></html>";
+
+    header_buffer += "HTTP/1.1 " + to_string(error_code) + short_message + "\r\n";
+    header_buffer += "Content-Type: text/html\r\n";
+    header_buffer += "Connection: Close\r\n";
+    header_buffer += "Content-Length: " + to_string(body_buffer.size()) + "\r\n";
+    header_buffer += "Server: Svain's Fast Web Server\r\n";
+    header_buffer += "\r\n";
+
+    sprintf(send_buffer, "%s", header_buffer.c_str());
+    writen(fd, send_buffer, strlen(send_buffer));
+    sprintf(send_buffer, "%s", body_buffer.c_str());
+    writen(fd, body_buffer, strlen(body_buffer));
+}
+
+void HttpData::link_timer(shared_ptr<Timer> timer) {
+    timer_ = timer;
+}
+
+shared_ptr<Channel> HttpData::get_channel() {
+    return channel_;
+}
+
+EventLoop* HttpData::get_event_loop() {
+    return event_loop_;
+}
+
+void HttpData::handle_close() {
+    connection_state_ = H_DISCONNECTED;
+    event_loop_->remove_from_poller(channel_);
+}
+
+void HttpData::new_event() {
+    channel_->set_events(DEFAULT_EVENT);
+    event_loop_->add_to_poller(channel_, DEFAULT_EXPIRED_TIME);
 }

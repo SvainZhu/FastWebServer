@@ -137,7 +137,7 @@ private:
     void handle_read();
     void handle_write();
     void handle_connect();
-    void handle_error(int fd, int num_error, string short_message);
+    void handle_error(int fd, int error_code, string short_message);
     URIState parse_URI();
     HeaderState parse_Headers();
     AnalysisState analyze_request();
