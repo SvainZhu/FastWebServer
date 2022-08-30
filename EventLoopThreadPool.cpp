@@ -12,7 +12,7 @@ EventLoopThreadPool::EventLoopThreadPool(EventLoop *loop, int num_threads) : loo
     }
 }
 
-void EventLoopThreadPool::thread_pool_start() {
+void EventLoopThreadPool::thread_pool_create() {
     assert(loop_->is_thread_in_loop());
     started_ = true;
     for (int i = 0; i < num_threads_; i++) {

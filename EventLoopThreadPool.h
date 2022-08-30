@@ -19,7 +19,7 @@ public:
     EventLoopThreadPool(EventLoop* loop, int num_threads);
 
     ~EventLoopThreadPool() { LOG <<  "~EventLoopThreadPool()"; }
-    void thread_pool_start();
+    void thread_pool_create();
     EventLoop* get_next_loop();
 
 private:
