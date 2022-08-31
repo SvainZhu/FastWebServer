@@ -11,7 +11,7 @@ ssize_t readn(int fd, void* buffer, size_t n) {
     ssize_t sum_read = 0;
     char* buff_ptr = (char *)buffer;
     while (n_left > 0) {
-        n_read = read(fd, buff_ptr, n_left;
+        n_read = read(fd, buff_ptr, n_left);
         if (n_read < 0) {
             if (errno == EINTR) n_read = 0;
             else if (errno == EAGAIN) return sum_read;
@@ -92,7 +92,7 @@ ssize_t writen(int fd, std::string &buffer) {
     size_t n_left = buffer.size();
     ssize_t n_write = 0;
     ssize_t sum_write = 0;
-    char *buffer_ptr = buffer.c_str();
+    const char *buffer_ptr = buffer.c_str();
     while (n_left > 0) {
         n_write = write(fd, buffer_ptr, n_left);
         if (n_write < 0) {
@@ -107,7 +107,7 @@ ssize_t writen(int fd, std::string &buffer) {
         n_left -= n_write;
         buffer_ptr += n_write;
     }
-    if (sum_write == static_cast<int>(buffer.size)) buffer.clear();
+    if (sum_write == static_cast<int>(buffer.size())) buffer.clear();
     else buffer = buffer.substr(sum_write);
     return sum_write;
 }
@@ -127,7 +127,7 @@ int set_socket_nonblock(int fd) {
     flag |= O_NONBLOCK;
     flag = fcntl(fd, F_SETFL, flag);
     if (flag == -1) return -1;
-    return 0
+    return 0;
 }
 
 void set_socket_nodelay(int fd) {

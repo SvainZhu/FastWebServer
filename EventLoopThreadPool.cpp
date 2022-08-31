@@ -22,7 +22,7 @@ void EventLoopThreadPool::thread_pool_create() {
     }
 }
 
-void EventLoopThreadPool::get_next_loop() {
+EventLoop* EventLoopThreadPool::get_next_loop() {
     assert(loop_->is_thread_in_loop());
     assert(started_);
     EventLoop *loop = loop_;

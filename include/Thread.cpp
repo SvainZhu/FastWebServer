@@ -32,7 +32,7 @@ void CurrentThread::cacheTid() {
 void ThreadData::runInThread() {
     *tid_ = CurrentThread::tid();
     tid_ = nullptr;
-    latch_->countDown();
+    latch_->count_down();
     latch_ = nullptr;
 
     CurrentThread::t_threadName = name_.empty() ? "Thread" : name_.c_str();
@@ -59,7 +59,7 @@ void Thread::set_default_name() {
 
 Thread::Thread(const ThreadFunction& function, const string &name) :
     started_(false), joined_(false), pid_(0), tid_(0), function_(function), name_(name), latch_(1){
-    setDefaultName();
+    set_default_name();
 }
 
 Thread::~Thread() {

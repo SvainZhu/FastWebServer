@@ -14,7 +14,7 @@ Timer::Timer(shared_ptr<HttpData> request_data, int timeout) : delete_(false), H
 }
 
 Timer::~Timer() {
-    if (Http_data_sptr) Http_data_sptr->handleClose();
+    if (Http_data_sptr) Http_data_sptr->handle_close();
 }
 
 Timer::Timer(Timer &timer) : Http_data_sptr(timer.Http_data_sptr), expired_time_(0) {}

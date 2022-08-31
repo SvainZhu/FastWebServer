@@ -115,7 +115,7 @@ void HttpData::reset() {
     path_.clear();
     read_cur_ = 0;
     process_state_ = STATE_PARSE_URI;
-    prase_state_ = H_START;
+    parse_state_ = H_START;
     headers_.clear();
     keep_alive_ = false;
     if (timer_.lock()) {
@@ -163,9 +163,9 @@ void HttpData::handle_read() {
                 perror("2");
                 buffer_in_.clear();
                 is_error_ = true;
-                LOG << "FD = " << fd_ "," << buffer_in_ << "******";
+                LOG << "FD = " << fd_ << "," << buffer_in_ << "******";
                 handle_error(fd_, 400, "Bad Request!!!");
-                beak
+                break;
             }
             else process_state_ = STATE_PARSE_HEADERS;
         }
@@ -328,7 +328,8 @@ HeaderState HttpData::parse_Headers() {
     int key_start = -1, key_end = -1, value_start = -1, value_end = -1;
     int read_cur = 0;
     bool finished = false;
-    for (size_t i = 0; i < string1.size() && !finished; i++) {
+    size_t i;
+    for (i = 0; i < string1.size() && !finished; i++) {
         switch (parse_state_) {
             case H_START: {
                 if (string1[i] == '\n' || string1[i] == 'r') break;
@@ -408,25 +409,25 @@ HeaderState HttpData::parse_Headers() {
 
 AnalysisState HttpData::analyze_request() {
     if (Http_method_ == METHOD_POST) {
-         string header;
-         header += string("HTTP/1.1 200 OK\r\n");
-         if(headers_.find("Connection") != headers_.end() && (headers_["Connection"] == "Keep-Alive" ||
-             headers_["Connection"] == "keep-alive")) {
-             keep_alive_ = true;
-             header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout="
-                     + to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
-         }
-         int length = stoi(headers_["Content-length"]);
-         vector<char> data(buffer_in_.begin(), buffer_in_.begin() + length);
-         Mat source = imdecode(data, CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_ANYCOLOR);
-         //imwrite("receive.bmp", src);
-         Mat result = stitch(source);
-         vector<uchar> data_encode;
-         imencode(".png", result, data_encode);
-         header += string("Content-length: ") + to_string(data_encode.size()) + "\r\n\r\n";
-         buffer_in_ += header + string(data_encode.begin(), data_encode.end());
-         buffer_in_ = buffer_in_.substr(length);
-         return ANALYSIS_SUCCESS;
+//         string header;
+//         header += string("HTTP/1.1 200 OK\r\n");
+//         if(headers_.find("Connection") != headers_.end() && (headers_["Connection"] == "Keep-Alive" ||
+//             headers_["Connection"] == "keep-alive")) {
+//             keep_alive_ = true;
+//             header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout="
+//                     + to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
+//         }
+//         int length = stoi(headers_["Content-length"]);
+//         vector<char> data(buffer_in_.begin(), buffer_in_.begin() + length);
+//         Mat source = imdecode(data, CV_LOAD_IMAGE_ANYDEPTH|CV_LOAD_IMAGE_ANYCOLOR);
+//         //imwrite("receive.bmp", src);
+//         Mat result = stitch(source);
+//         vector<uchar> data_encode;
+//         imencode(".png", result, data_encode);
+//         header += string("Content-length: ") + to_string(data_encode.size()) + "\r\n\r\n";
+//         buffer_in_ += header + string(data_encode.begin(), data_encode.end());
+//         buffer_in_ = buffer_in_.substr(length);
+//         return ANALYSIS_SUCCESS;
     }
     else if (Http_method_ == METHOD_GET || Http_method_ == METHOD_HEAD) {
         string header;
@@ -499,7 +500,7 @@ void HttpData::handle_error(int fd, int error_code, string short_message) {
     body_buffer += "<html><title>呀~访问出错了</title>";
     body_buffer += "<body bgcolor=\"ffffff\">";
     body_buffer += to_string(error_code) + short_message;
-    body_buff += "<hr><em> Svain's Fast Web Server</em>\n</body></html>";
+    body_buffer += "<hr><em> Svain's Fast Web Server</em>\n</body></html>";
 
     header_buffer += "HTTP/1.1 " + to_string(error_code) + short_message + "\r\n";
     header_buffer += "Content-Type: text/html\r\n";

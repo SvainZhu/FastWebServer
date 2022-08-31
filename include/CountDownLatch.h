@@ -6,6 +6,8 @@
 #define FASTWEBSERVER_COUNTDOWNLATCH_H
 
 #include "noncopyable.h"
+#include "MutexLock.h"
+#include "Condition.h"
 
 class CountDownLatch :noncopyable {
 public:
@@ -15,8 +17,8 @@ public:
     void count_down();
 
 private:
-    mutable Mutexlock mutex_;
-    Condition condition;
+    mutable MutexLock mutex_;
+    Condition condition_;
     int count_;
 };
 

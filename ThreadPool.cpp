@@ -6,6 +6,8 @@
 
 pthread_mutex_t ThreadPool::mutex_lock_ = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t ThreadPool::notify_ = PTHREAD_COND_INITIALIZER;
+vector<pthread_t> ThreadPool::threads_;
+vector<ThreadPoolTask> ThreadPool::queue_;
 int ThreadPool::thread_count_ = 0;
 int ThreadPool::queue_size_ = 0;
 int ThreadPool::head_ = 0;

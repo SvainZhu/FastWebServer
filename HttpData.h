@@ -113,7 +113,7 @@ public:
     void new_event();
 
 private:
-    EventLoop event_loop_;
+    EventLoop* event_loop_;
     shared_ptr<Channel> channel_;
     int fd_;
     string buffer_in_;

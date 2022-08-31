@@ -31,7 +31,7 @@ public:
     int join();
 
     bool started() const {return started_;}
-    pid_t tid() const {return tid_};
+    pid_t tid() const {return tid_; }
     const string& name() const {return name_;}
 
 private:
