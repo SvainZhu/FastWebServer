@@ -40,6 +40,8 @@ At the beginning, this project want to realize a nanolog system to realize the l
 
 ## References
 [1]. [Epoll(7) - Linux man page.](https://linux.die.net/man/7/epoll)
+
 [2]. [Muduo: Event-driven network library for multi-threaded Linux server in C++11](https://github.com/chenshuo/muduo)
+
 [3]. [WebServer: A C++ High Performance Web Server](https://github.com/linyacool/WebServer)
 
